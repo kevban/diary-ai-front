@@ -1,4 +1,4 @@
-import 'package:diary_ai/providers/content_provider.dart';
+import 'package:diary_ai/providers/scenario_provider.dart';
 import 'package:diary_ai/widgets/shared/my_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';

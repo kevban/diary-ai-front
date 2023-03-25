@@ -1,4 +1,5 @@
 import 'package:diary_ai/helpers.dart';
+import 'package:diary_ai/theme.dart';
 import 'package:diary_ai/widgets/shared/my_scaffold.dart';
 import 'package:flutter/material.dart';
 
@@ -14,8 +15,6 @@ class DiaryDetailsPage extends StatefulWidget {
 
 class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
   Future<String> getDiaryEntry() async {
-    print('title:'+ widget.title);
-    print('date:'+ widget.date);
     final entries =
         await LocalStorage.getLocalFile('/diary/${widget.title}${widget.date}.txt');
     if (entries == null) {
@@ -37,7 +36,7 @@ class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 16),
+                  SizedBox(height: spacingMedium),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(

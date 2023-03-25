@@ -1,3 +1,4 @@
+import 'package:diary_ai/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -18,13 +19,12 @@ class NotFoundPage extends StatelessWidget {
               size: 64.0,
               color: Theme.of(context).colorScheme.error,
             ),
-            SizedBox(height: 16.0),
+            SizedBox(height: spacingMedium),
             Text(
               'Oops! We couldn\'t find the page you were looking for.',
-              style: TextStyle(fontSize: 16.0),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 16.0),
+            SizedBox(height: spacingMedium),
             ElevatedButton(
               child: Text('Go Back'),
               onPressed: () {

@@ -1,10 +1,13 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:diary_ai/app_data.dart';
 import 'package:diary_ai/classes/character.dart';
-import 'package:diary_ai/classes/content.dart';
+import 'package:diary_ai/classes/scenario.dart';
 import 'package:diary_ai/classes/message.dart';
+import 'package:diary_ai/config.dart';
 import 'package:diary_ai/helpers.dart';
+import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
 
@@ -13,40 +16,29 @@ part 'interview.g.dart';
 @JsonSerializable()
 class Interview {
   String id = const Uuid().v4();
-  String?
-      characterName; // this is the character, which is represented by the charName
-  List<String> topics = []; // this will be the list of things AI will ask.
-  String contentType = 'diary';
-  String contentStarter = 'Dear diary,\n';
-  String title =
-      'Diary'; // the title of the interview. Used in display and file directory
-  String repeat = 'daily'; // how often the interview is repeated
-  DateTime time =
-      DateTime.now(); // the next time this interview becomes available
+  String
+      characterId; // this is the character, which is represented by the characterId
+  String scenarioId; // this is the scenario, which is represented by scenarioId
+  String title; // the title of the interview. Used in display
+  DateTime lastMessage = DateTime.now(); // the timestamp of last message sent
   List<Message> messages = [];
   List<Message> currentMessages = [];
   String status = "STANDBY";
-  String userName;
-  String userDesc;
 
   Interview(
-      {this.characterName,
-      required this.userName,
-      required this.userDesc,
-      required this.topics,
-      required this.contentStarter,
-      required this.contentType,
+      {required this.characterId,
+      required this.scenarioId,
       required this.title});
 
   /// returns a string representation of the current messages
   String compileMessages({int? maxMsg}) {
     maxMsg ??= currentMessages.length;
-    int start = currentMessages.length - maxMsg;
+    int start = max(currentMessages.length - maxMsg, 0);
     List<String> messageList = [];
     for (int i = start; i < currentMessages.length; i++) {
       if (currentMessages[i].sender == 'Me') {
-        messageList.add('$userName: ${currentMessages[i].text}');
-      } else {
+        messageList.add('${AppData.userName}: ${currentMessages[i].text}');
+      } else if (currentMessages[i].sender != 'System') {
         messageList
             .add('${currentMessages[i].sender}: ${currentMessages[i].text}');
       }
@@ -72,14 +64,32 @@ class Interview {
     return returnedMsg;
   }
 
-  void pushMessages({required Message newMsg}) async {
+  Future<void> pushMessages(
+      {required Message newMsg, bool error = false}) async {
     messages.add(newMsg);
     currentMessages.add(newMsg);
-    await LocalStorage.saveLocalFile('/interviews', jsonEncode(this), identifier: id);
+    lastMessage = DateTime.now();
+    await LocalStorage.saveLocalFile('/interviews', jsonEncode(this),
+        fileName: id, identifier: id);
   }
 
+  /// returns the string representation of the last message
+  String getDate() {
+    DateTime today = DateTime.now();
+    DateFormat dateFormatter = DateFormat('Md');
+    DateFormat timeFormatter = DateFormat('Hm');
+    String todayStr = dateFormatter.format(today);
+    String lastMsgStr = dateFormatter.format(lastMessage);
+
+    if (todayStr != lastMsgStr) {
+      return lastMsgStr;
+    } else {
+      return timeFormatter.format(lastMessage);
+    }
+  }
 
   void reset() {
+    messages.clear();
     currentMessages.clear();
     status = 'STANDBY';
   }

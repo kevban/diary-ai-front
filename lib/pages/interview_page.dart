@@ -1,7 +1,11 @@
 import 'package:diary_ai/classes/character.dart';
+import 'package:diary_ai/classes/interview.dart';
+import 'package:diary_ai/classes/scenario.dart';
 import 'package:diary_ai/pages/chat_page.dart';
 import 'package:diary_ai/providers/character_provider.dart';
 import 'package:diary_ai/providers/message_provider.dart';
+import 'package:diary_ai/providers/scenario_provider.dart';
+import 'package:diary_ai/theme.dart';
 import 'package:diary_ai/widgets/shared/char_avatar.dart';
 import 'package:diary_ai/widgets/shared/my_scaffold.dart';
 import 'package:flutter/material.dart';
@@ -20,22 +24,30 @@ class _InterviewPageState extends State<InterviewPage> {
   Widget build(BuildContext context) {
     MessageProvider messageProvider = context.watch<MessageProvider>();
     CharacterProvider characterProvider = context.watch<CharacterProvider>();
+    messageProvider.interviews.sort((Interview a, Interview b) {
+      return b.lastMessage.compareTo(a.lastMessage);
+    });
     return MyScaffold(
-      appbarTitle: 'Interviews',
+      appbarTitle: 'My Chats',
       body: ListView(
         children: messageProvider.interviews.map((interview) {
           Character? character =
-              characterProvider.findCharacterByName(interview.characterName);
+              characterProvider.getCharacterById(interview.characterId);
           return ListTile(
-            leading: CharacterAvatar(
-              name: interview.characterName!,
-              image: character?.getImage(),
-              size: 82,
-            ),
-            title: Text(interview.title),
-            subtitle: Text(character == null ? '' : character.name),
-            onTap: () => context.go('/interview/${interview.title}')
-          );
+              leading: CharacterAvatar(
+                character: character,
+                size: avatarSmall,
+              ),
+              contentPadding: const EdgeInsets.all(16),
+              style: ListTileStyle.drawer,
+              title: Text(interview.title),
+              subtitle: Text(
+                interview.compileMessages(maxMsg: 1).trim(),
+                maxLines: 1,
+                style: const TextStyle(overflow: TextOverflow.ellipsis),
+              ),
+              trailing: Text(interview.getDate()),
+              onTap: () => context.go('/interview/${interview.id}'));
         }).toList(),
       ),
     );

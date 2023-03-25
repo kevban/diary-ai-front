@@ -1,18 +1,27 @@
 import 'dart:convert';
 
+import 'package:diary_ai/app_data.dart';
 import 'package:diary_ai/classes/character.dart';
 import 'package:diary_ai/classes/interview.dart';
+import 'package:diary_ai/classes/scenario.dart';
 import 'package:diary_ai/diary_api.dart';
 import 'package:diary_ai/helpers.dart';
-import 'package:diary_ai/pages/char_details_page.dart';
+import 'package:diary_ai/pages/discover_page.dart';
+import 'package:diary_ai/pages/not_found_page.dart';
+import 'package:diary_ai/pages/onboard_page.dart';
+import 'package:diary_ai/providers/discovery_provider.dart';
+import 'package:diary_ai/widgets/char_widgets/char_details_modal.dart';
 import 'package:diary_ai/pages/diary_page.dart';
 import 'package:diary_ai/pages/interview_page.dart';
 import 'package:diary_ai/pages/new_interview_page.dart';
+import 'package:diary_ai/pages/scenario_page.dart';
 import 'package:diary_ai/providers/character_provider.dart';
-import 'package:diary_ai/providers/content_provider.dart';
+import 'package:diary_ai/providers/scenario_provider.dart';
 import 'package:diary_ai/providers/message_provider.dart';
 import 'package:diary_ai/theme.dart';
+import 'package:diary_ai/widgets/shared/dismiss_keyboard.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:diary_ai/pages/char_page.dart';
 import 'package:diary_ai/pages/chat_page.dart';
@@ -23,75 +32,49 @@ import 'package:go_router/go_router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final characters = await LocalStorage.getLocalFiles('/characters');
-  final interviews = await LocalStorage.getLocalFiles('/interviews');
-  List<Character> characterList = [];
-  List<Interview> interviewList = [];
-  if (!kIsWeb) {
-    for (String filename in characters) {
-      String? characterContent =
-          await LocalStorage.getLocalFile('/characters/$filename');
-      if (characterContent != null) {
-        characterList.add(Character.fromJson(jsonDecode(characterContent)));
-      }
-    }
-    for (String filename in interviews) {
-      String? interviewContent =
-          await LocalStorage.getLocalFile('/interviews/$filename');
-      if (interviewContent != null) {
-        interviewList.add(Interview.fromJson(jsonDecode(interviewContent)));
-      }
-    }
-  } else {
-    /// for web, the list retrieved from getLocalFiles is the lsit of items, instead of file names
-    for (String character in characters) {
-      characterList.add(Character.fromJson(jsonDecode(character)));
-    }
-    for (String interview in interviews) {
-      interviewList.add(Interview.fromJson(jsonDecode(interview)));
-    }
+  if (kReleaseMode) {
+    debugPrint = (String? message, {int? wrapWidth}) {};
   }
-
-  final content = await LocalStorage.getLocalFiles('/content');
+  await AppData.initApp();
+  await dotenv.load(fileName: 'dotenv');
 
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(
-          create: (_) => MessageProvider(interviews: interviewList)),
+          create: (_) => MessageProvider(interviews: AppData.interviewList)),
       ChangeNotifierProvider.value(
-          value: CharacterProvider(characters: characterList)),
-      ChangeNotifierProvider.value(value: ContentProvider()),
+          value: CharacterProvider(characters: AppData.characterList)),
+      ChangeNotifierProvider.value(
+          value: ScenarioProvider(scenarios: AppData.scenarioList)),
+      ChangeNotifierProvider.value(
+        value: DiscoverProvider(),
+      ),
     ],
     child: const MyApp(),
   ));
 }
 
-final _router = GoRouter(routes: [
+final _router =
+    GoRouter(errorBuilder: (context, state) => const NotFoundPage(), routes: [
+  GoRoute(path: '/', builder: (context, state) => InterviewPage()),
   GoRoute(
-    path: '/',
+    path: '/chat',
     builder: (context, state) => InterviewPage(),
   ),
+  GoRoute(path: '/discover', builder: (context, state) => DiscoverPage()),
   GoRoute(
     path: '/characters',
     builder: (context, state) => CharPage(),
   ),
   GoRoute(
-    path: '/characters/:name',
-    builder: (context, state) => CharacterDetailsPage(
-      character: context
-          .read<CharacterProvider>()
-          .findCharacterByName(state.params['name']),
-    ),
+    path: '/scenarios',
+    builder: (context, state) => ScenarioPage(),
   ),
   GoRoute(
-    path: '/diary',
-    builder: (context, state) => ContentPage(),
-  ),
-  GoRoute(
-      path: '/interview/:title',
+      path: '/interview/:id',
       builder: (context, state) {
         return ChatPage(
-          interviewTitle: state.params['title']!,
+          interviewId: state.params['id']!,
         );
       }),
   GoRoute(
@@ -113,9 +96,13 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      routerConfig: _router,
-      theme: appTheme,
+    return DismissKeyboard(
+      child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        title: 'ConverAI',
+        routerConfig: _router,
+        theme: createTheme(context),
+      ),
     );
   }
 }

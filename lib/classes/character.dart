@@ -10,11 +10,11 @@ part 'character.g.dart';
 
 @JsonSerializable()
 class Character {
-  String id = const Uuid().v4();
+  String id;
   String name;
   String desc;
   String vocab;
-
+  int? downloads; // this keep track of the downloads for server characters
 
   String? imgBase64;
 
@@ -25,7 +25,10 @@ class Character {
       required this.desc,
       required this.vocab,
       required this.characteristics,
-      this.imgBase64});
+      this.imgBase64,
+      this.downloads,
+      required this.id}) {
+  }
 
   ImageProvider? getImage() {
     if (imgBase64 != null) {
@@ -33,6 +36,11 @@ class Character {
       return MemoryImage(imgBytes);
     }
     return null;
+  }
+
+  /// if this evaluates to true, the character is uploaded to the server
+  bool isComplete() {
+    return imgBase64 != null && characteristics.length >= 15;
   }
 
   factory Character.fromJson(Map<String, dynamic> json) =>

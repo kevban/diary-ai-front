@@ -14,13 +14,16 @@ Character _$CharacterFromJson(Map<String, dynamic> json) => Character(
           .map((e) => e as String)
           .toList(),
       imgBase64: json['imgBase64'] as String?,
-    )..id = json['id'] as String;
+      downloads: json['downloads'] as int?,
+      id: json['id'] as String,
+    );
 
 Map<String, dynamic> _$CharacterToJson(Character instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
       'desc': instance.desc,
       'vocab': instance.vocab,
+      'downloads': instance.downloads,
       'imgBase64': instance.imgBase64,
       'characteristics': instance.characteristics,
     };

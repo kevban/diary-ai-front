@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../theme.dart';
+
 class TopicsField extends StatefulWidget {
   final List<String> topics;
   final ValueChanged<List<String>> onChanged;
@@ -57,7 +59,7 @@ class _TopicsFieldState extends State<TopicsField> {
           'Topics',
           style: Theme.of(context).textTheme.titleMedium,
         ),
-        SizedBox(height: 20,),
+        SizedBox(height: spacingMedium,),
         Wrap(
           spacing: 8.0,
           runSpacing: 8.0,
@@ -70,7 +72,7 @@ class _TopicsFieldState extends State<TopicsField> {
             );
           }).toList(),
         ),
-        SizedBox(height: 30,),
+        SizedBox(height: spacingLarge,),
         Row(
           children: [
             Expanded(

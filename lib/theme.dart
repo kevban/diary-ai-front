@@ -1,37 +1,39 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-const kPrimaryColor = Color(0xFF121212);
+///colors
+const kPrimaryColor = Color.fromRGBO(94, 160, 131, 1.0);
 const kSecondaryColor = Color(0xFF222222);
 const kShadeColor = Color.fromRGBO(34, 34, 34, 0.7);
-const kAccentColor = Color.fromRGBO(0, 112, 143, 1);
-const kSuccessColor = Colors.teal;
+const kAccentColor = Color.fromRGBO(87, 127, 140, 1.0);
+const kSuccessColor = Color.fromRGBO(94, 160, 131, 1.0);
 const kTextColor = Color(0xFFE0E0E0);
-const kErrorColor = Colors.red;
+const kAccentTextColor = Color(0xFFCBCBCB);
+const kErrorColor = Color.fromRGBO(173, 54, 79, 1.0);
 
-ColorScheme appColorScheme = const ColorScheme(
-    brightness: Brightness.dark,
-    primary: kPrimaryColor,
-    onPrimary: kTextColor,
-    secondary: kSecondaryColor,
-    onSecondary: kTextColor,
-    error: kSecondaryColor,
-    onError: kErrorColor,
-    background: kPrimaryColor,
-    onBackground: kTextColor,
-    surface: kSecondaryColor,
-    onSurface: kTextColor);
+///sizes
+const avatarSmall = kIsWeb ? 54.0 : 42.0;
+const avatarLarge = kIsWeb ? 82.0 : 64.0;
+const spacingSmall = kIsWeb ? 10.0 : 6.0;
+const spacingMedium = kIsWeb ? 16.0 : 10.0;
+const spacingLarge = kIsWeb ? 24.0: 32.0;
 
-ThemeData appTheme = ThemeData(
-    colorScheme: appColorScheme,
-    textTheme: GoogleFonts.rocknRollOneTextTheme(TextTheme()),
-    inputDecorationTheme: InputDecorationTheme(
-        labelStyle: TextStyle(color: kTextColor),
-        focusedBorder:
-            UnderlineInputBorder(borderSide: BorderSide(color: kTextColor))),
-    elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ButtonStyle(
-            padding:
-                MaterialStateProperty.all<EdgeInsets>(const EdgeInsets.all(10)),
-            backgroundColor: MaterialStateProperty.all<Color>(kAccentColor))),
-    textSelectionTheme: TextSelectionThemeData(cursorColor: kTextColor));
+
+ThemeData createTheme(context) {
+  final theme = ThemeData(
+    colorScheme: ColorScheme.fromSeed(
+        seedColor: kPrimaryColor,
+        brightness: Brightness.dark,
+        primary: kPrimaryColor,
+        secondary: kAccentColor,
+        error: kErrorColor),
+    textTheme: Theme.of(context).textTheme.apply(
+      fontFamily: 'RocknRollOne',
+      fontSizeFactor: kIsWeb ? 1.1 : 0.9,
+      bodyColor: kTextColor,
+      displayColor: kAccentTextColor,
+    ),
+  );
+  return theme;
+}
