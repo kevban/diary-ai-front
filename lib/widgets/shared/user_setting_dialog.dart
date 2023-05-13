@@ -22,9 +22,14 @@ class _UserSettingDialogState extends State<UserSettingDialog> {
       setState(() {
         _isSubmitting = true;
       });
-      await AppData.initializeUser(
-        name: _userNameController.text,
-      );
+      try {
+        await AppData.initializeUser(
+          name: _userNameController.text,
+        );
+      } catch (e) {
+        showDialog(context: context, builder: (context) => AlertDialog(content: Text(e.toString()),));
+      }
+
       if (widget.updateParent != null) {
         widget.updateParent!();
         Navigator.pop(context);

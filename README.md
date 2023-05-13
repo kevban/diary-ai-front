@@ -1,16 +1,27 @@
-# diary_ai
+# ConverAI
 
-A new Flutter project.
+## Description
 
-## Getting Started
+This is the flutter front-end for ConverAI, an AI chat bot app that allows users to chat with any character in any scenario.
+[Click here to launch the app!](converai.app)
 
-This project is a starting point for a Flutter application.
+## Usage & Features
 
-A few resources to get you started if this is your first Flutter project:
+1. Easily create a character using a name + description
+2. Describe the scenario which you will be chatting in
+3. Start the conversation 
+4. Mix and match any character x scenario combination!
+5. Discover interesting user created scenarios/characters and add them to your app!
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Installation
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. Clone the repository
+2. Install Flutter
+3. Run `flutter pub get`
+4. Run the app using `flutter run`
+
+## Tech stack
+- Flutter (web and mobile)
+- MongoDB
+- Dart
+- ChatGPT API

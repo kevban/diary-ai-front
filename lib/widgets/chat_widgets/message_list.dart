@@ -37,7 +37,7 @@ class _MessageListState extends State<MessageList> {
   Widget build(BuildContext context) {
     List<Widget> messageTiles = [];
     List<Message> messages = widget.interview.getMessages();
-    if (messages.isEmpty) {
+    if (widget.interview.status == 'STANDBY') {
       if (widget.character != null && widget.scenario != null) {
         context.read<MessageProvider>().userMsg(
             interview: widget.interview,

@@ -114,13 +114,15 @@ class MessageProvider with ChangeNotifier {
       required Character character,
       required Scenario scenario}) async {
     if (interview == null || interview.status == 'ENDED') {
-      return false;
+      return true;
     }
     // if (AppData.curToken > 10000 && !AppData.premium) {
     //   return false;
     // }
     if (newMsg != null) {
       pushMessage(newMsg!, interview);
+    } else if (interview.status != 'STANDBY') {
+      return true;
     }
     interview.status = 'TYPING';
     notifyListeners();
